@@ -1,0 +1,60 @@
+html {
+    font-size: 14px;
+  }
+  body {
+    font-family: 'Noto Sans', sans-serif;
+  }
+  a {
+    text-decoration: none;
+  }
+  
+  .carousel-item img {
+    object-fit: cover;
+    object-position: top;
+    height: 80vh;
+    overflow: hidden;
+  }
+  
+  .old_price {
+    font-weight: bold;
+    color: red;
+  }
+  
+  .new_price {
+    font-weight: bold;
+    background-color: green;
+    color: white;
+    padding: 2px;
+    border-radius: 5px;
+    margin-bottom: 2px;
+  }
+  
+  .pic-box {
+    position: relative;
+  }
+  
+  .hot {
+    background-color: orangered;
+    color: white;
+    width: 50px;
+    text-align: center;
+    font-weight: bold;
+    display: inline;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    top: 0;
+    right: 20px;
+    z-index: 10;
+  }
+
+  .category-img{
+    height: 250px; /* Set a fixed height for the images */
+    object-fit: cover; /* Ensures the image fills the container while maintaining its aspect ratio */
+    object-position: center; /* Ensures the image is centered within its container */
+}
+.carts{
+    height: 300px; /* Set a consistent height */
+    width: 100%;   /* Ensure the image spans the entire width of the container */
+    object-fit: cover;  /* Maintain aspect ratio, avoid stretching */
+  }
