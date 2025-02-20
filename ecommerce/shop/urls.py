@@ -17,7 +17,6 @@ urlpatterns= [
     path('collections/<str:cname>/<str:pname>',views.product_details,name="product_details"),
     path('addtocart',views.add_to_cart,name="addtocart"),
 
-
-    path('checkout/', views.checkout, name='checkout'),
-    path('payment_success/', views.payment_success, name='payment_success'),
+    path('checkout',views.checkout,name="checkout"),
+    path('order_success/', views.order_success, name='order_success')
 ]

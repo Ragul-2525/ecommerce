@@ -5,47 +5,12 @@ from . models import *
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 import json
+from django import template
+from django.shortcuts import render
+from .models import Cart,Order
 from django.contrib.auth.decorators import login_required
-from .models import Cart, Order
-from django.http import HttpResponse
  
-
-@login_required
-def checkout(request):
-    # Fetch user's cart items
-    cart_items = Cart.objects.filter(user=request.user)
-    
-    if request.method == "POST":
-        full_name = request.POST.get('full_name')
-        address = request.POST.get('address')
-        phone = request.POST.get('phone')
-        
-        # Create an order object with address details
-        order = Order.objects.create(
-            user=request.user,
-            full_name=full_name,
-            address=address,
-            phone=phone,
-            total_cost=sum(item.total_cost for item in cart_items),
-        )
-        
-        # Mark cart items as part of the order (you can customize this part)
-        order.cart_items.add(*cart_items)
-        
-        # Proceed to payment page (this could be a real gateway, like Stripe or PayPal)
-        return redirect('payment_success')
-    
-    # If GET request, show the checkout page
-    total_cost = sum(item.total_cost for item in cart_items)
-    return render(request, 'shop/cart.html', {'cart': cart_items, 'total_cost': total_cost})
-
-
-
-def payment_success(request):
-    return render(request, 'shop/payment_success.html')
-
-
-
+ 
 def home(request):
   products=Product.objects.filter(trending=1)
   return render(request,"shop/index.html",{"products":products})
@@ -178,3 +143,51 @@ def product_details(request,cname,pname):
     else:
       messages.error(request,"No Such Catagory Found")
       return redirect('collections')
+    
+
+
+@login_required
+def checkout(request):
+    # Get cart items for the current user
+    cart = Cart.objects.filter(user=request.user)
+    
+    # Calculate the total amount and total cost dynamically
+    total_amount = 0
+    cart_items = []
+    for item in cart:
+        # Dynamically calculate the total cost for each item
+        total_cost = item.product.selling_price * item.product_qty
+        total_amount += total_cost
+        cart_items.append({
+            'product': item.product,
+            'product_qty': item.product_qty,
+            'total_cost': total_cost
+        })
+    
+    if request.method == 'POST':
+        # Capture shipping details and create a new order
+        order = Order(
+            user=request.user,
+            first_name=request.POST['first_name'],
+            last_name=request.POST['last_name'],
+            email=request.POST['email'],
+            phone_number=request.POST['phone_number'],
+            address=request.POST['address'],
+            city=request.POST['city'],
+            state=request.POST['state'],
+            pincode=request.POST['pincode'],
+            landmark=request.POST.get('landmark', ''),  # optional field
+            total_amount=total_amount
+        )
+        order.save()
+
+        # Clear the cart after successful checkout
+        cart.delete()
+
+        messages.success(request, 'Your order has been placed successfully!')
+        return redirect('order_success')  # Redirect to an order success page
+    
+    return render(request, 'shop/checkout.html', {'cart': cart_items, 'total_amount': total_amount})
+
+def order_success(request):
+    return render(request, 'shop/order_success.html')

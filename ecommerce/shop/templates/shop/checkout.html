@@ -1,0 +1,112 @@
+{% extends 'shop/layouts/main.html' %}
+{% block title %}
+  Checkout | ShopKart
+{% endblock title %}
+
+{% block content %}
+<section class="bg-light py-4 my-5" style="min-height:600px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mb-3">Checkout</h4>
+        <hr style="border-color:#b8bfc2;">
+      </div>
+
+      <!-- Cart Table -->
+      <div class="col-12">
+        <div class="table-responsive">
+          <h5>Order Summary</h5>
+          <table class="table table-bordered text-center">
+            <thead class="thead-dark">
+              <tr>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Unit Price (Rs.)</th>
+                <th>Quantity</th>
+                <th>Total (Rs.)</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                <tr>
+                   <td><img src="{{ item.product.product_image.url }}" height="75px" alt="{{ item.product.name }}"></td>
+                   <td>{{ item.product.name }}</td>
+                   <td>{{ item.product.selling_price }}</td>
+                   <td>{{ item.product_qty }}</td>
+                   <td class="amt">{{ item.total_cost }}</td>
+                 </tr>
+                 {% endfor %}
+              <tr>
+                <td colspan="4" class="text-right font-weight-bold">Total Amount</td>
+                <td class="font-weight-bold text-danger" id="net">Rs. {{ total_amount }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Shipping Details Form -->
+      <div class="col-12 mt-4">
+        <h5>Shipping Details</h5>
+        <form method="POST" action="{% url 'checkout' %}">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="firstName" name="first_name" placeholder="Enter first name" required>
+            </div>
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="lastName" name="last_name" placeholder="Enter last name" required>
+            </div>
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+            </div>
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone_number" placeholder="Enter your phone number" required>
+            </div>
+            <div class="col-12">
+                <label for="address" class="form-label">Address</label>
+                <textarea class="form-control" id="address" name="address" placeholder="Enter your address" rows="3" required></textarea>
+            </div>
+            <div class="col-md-6">
+              <label for="city" class="form-label">City</label>
+              <input type="text" class="form-control" id="city" name="city" placeholder="Enter your city" required>
+            </div>
+            <div class="col-md-6">
+              <label for="state" class="form-label">State</label>
+              <input type="text" class="form-control" id="state" name="state" placeholder="Enter your state" required>
+            </div>
+            <div class="col-md-6">
+              <label for="pincode" class="form-label">Pincode</label>
+              <input type="text" class="form-control" id="pincode" name="pincode" placeholder="Enter your pincode" required>
+            </div>
+            <div class="col-md-6">
+                <label for="landmark" class="form-label">Landmark</label>
+                <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter landmark" required>
+            </div>
+            <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-primary w-20 mx-auto d-block">Proceed to Payment</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // JavaScript to calculate the total amount dynamically
+  document.addEventListener("DOMContentLoaded", function () {
+    const nodes = document.querySelectorAll("td:nth-child(5)"); // Target Total column
+    const total = Array.from(nodes).reduce((acc, curr) => {
+      const value = parseFloat(curr.textContent) || 0;
+      return acc + value;
+    }, 0);
+    document.getElementById("net").textContent = `Rs. ${total}`;
+  });
+</script>
+
+{% endblock content %}

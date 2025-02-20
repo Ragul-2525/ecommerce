@@ -1,111 +1,65 @@
 {% extends 'shop/layouts/main.html' %}
-
 {% block title %}
-  Checkout | ShopKart
+  Registration | ShopKart
 {% endblock title %}
-
 {% block content %}
-  <section class="bg-light py-4 my-5" style="min-height:800px;">
+  <section class="bg-light py-4 my-5" style="min-height:600px;">
     <div class="container">
       <div class="row">
-        <!-- Cart items -->
-        <div class="col-12 col-md-6 mb-4">
-          <h4 class="mb-3">Cart Items</h4>
+        <div class="col-12">
+          <h4 class="mb-3">Cart  Items</h4>
           <hr style="border-color:#b8bfc2;">
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
+        </div>
+      
+        <table class="table table-bordered table-responsive text-center">
+            <tr>
                 <th>Image</th>
                 <th>Product Name</th>
                 <th>Unit</th>
                 <th>Quantity</th>
                 <th>Amount</th>
                 <th>Remove</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in cart %}
-              <tr>
-                <td><img src="{{ item.product.product_image.url }}" height="75px" alt="{{ item.product.name }}"></td>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.product.selling_price | stringformat:'d' }}</td>
-                <td>{{ item.product_qty }}</td>
-                <td class="amt">{{ item.total_cost | stringformat:'d' }}</td>
-                <td><a href="{% url 'remove_cart' item.id %}" onclick="return confirm('Are you sure? to Remove')" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Remove</a></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <div class="text-right">
-            <h5><strong>Total Amount: Rs <span id="net">0</span></strong></h5>
-          </div>
-        </div>
+            </tr>
+          
 
-        <!-- Address and Payment Details -->
-        <div class="col-12 col-md-6">
-          <h4 class="mt-5 mb-3">Address Details</h4>
-          <hr style="border-color:#b8bfc2;">
-          <form action="{% url 'payment_success' %}" method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-              <label for="full_name" class="form-label">Full Name</label>
-              <input type="text" name="full_name" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label for="address" class="form-label">Address</label>
-              <textarea name="address" class="form-control" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-              <label for="phone" class="form-label">Phone</label>
-              <input type="text" name="phone" class="form-control" required>
-            </div>
-
-            <h4 class="mt-5 mb-3">Payment Details</h4>
-            <hr style="border-color:#b8bfc2;">
-            <h5>Order Summary</h5>
-            <ul class="list-unstyled">
-              <li><strong>Full Name: </strong>{{ user.name }}</li>
-              <li><strong>Address: </strong>{{ user.address }}</li>
-              <li><strong>Phone: </strong>{{ user.phone }}</li>
-            </ul>
-
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for item in cart %}
-                <tr>
-                  <td>{{ item.product.name }}</td>
-                  <td>{{ item.product_qty }}</td>
-                  <td>{{ item.total_cost | stringformat:'d' }}</td>
-                </tr>
-                {% endfor %}
-                <tr>
-                  <td colspan="2"><strong>Total</strong></td>
-                  <td><strong id="total_cost">{{ total_cost | stringformat:'d' }}</strong></td>
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Here you would integrate a payment gateway like Stripe or PayPal -->
-            <button type="submit" class="btn btn-success mt-4 w-100">Pay Now</button>
-          </form>
-        </div>
+            {% for item in cart %}
+           <tr>
+              <td><img src="{{item.product.product_image.url}}" height="75px" alt="{{item.product.name}}"></td>
+              <td>{{item.product.name}}</td>
+              <td>{{item.product.selling_price | stringformat:'d'}}</td>
+              <td>{{item.product_qty}}</td>
+              <td class="amt">{{item.total_cost | stringformat:'d'}}</td>
+              <td><a href="{% url 'remove_cart' item.id %}"  onclick="return confirm('Are you sure? to Remove')"  class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Remove</a></td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td></td>
+              <td></td>
+              <td colspan="2"><b>Total Amount</b></td>
+              <th id="net">0</th>
+              <td><button class="btn btn-primary btn-sm" id="check">
+                <i class="fa fa-check-circle"></i> Check Out
+              </button></td>
+            </tr>
+           
+        </table>
+       
       </div>
-    </div>
+      </div>
   </section>
 
   <script>
     const nodes = document.querySelectorAll('.amt');
     const arr = Array.from(nodes);
     const res = arr.reduce((acc, curr) => {
-      return acc += Number(curr.textContent)
+     return acc += Number(curr.textContent)
     }, 0);
-    document.getElementById("net").innerHTML = res;
+    document.getElementById("net").innerHTML="Rs : "+res;
+
+    document.getElementById("check").addEventListener("click", function () {
+    // Redirect to the checkout page
+    window.location.href = "/checkout"; // Update URL as necessary
+  }); 
+
   </script>
 {% endblock content %}
